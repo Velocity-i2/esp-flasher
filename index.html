@@ -833,22 +833,65 @@ function showToast(msg) {
 // ── ESP Web Tools event listener ────────────────────────────────────────────
 // 'state-changed' fires with: initializing, manifest, prepare,
 //  erasing, writing, finished, error
-document.getElementById('esp-btn').addEventListener('state-changed',
-async (e) => {console.log("ESP STATE:",e.detail?.state );
+const espBtn =
+document.getElementById('esp-btn');
 
-  const state = e.detail?.state;
+let flashStarted = false;
 
-  if(state === 'finished'){
-    await incrementCount();
-    await saveFlashLog();
-    showToast(
-      '✅ Firmware flashed successfully!'
-    );
+espBtn.addEventListener(
+
+'state-changed',
+
+(e)=>{
+
+  console.log(
+    "ESP STATE:",
+    e.detail?.state
+  );
+
+  const state =
+  e.detail?.state;
+
+  if(
+    state === 'writing'
+  ){
+
+    flashStarted = true;
   }
 
-  if(state === 'error'){
+  if(
+    state === 'error'
+  ){
+
+    flashStarted = false;
+
     showToast(
-      '❌ Flash failed'
+      '❌ Flash Failed'
+    );
+  }
+});
+
+// Detect disconnect after successful flash
+navigator.serial.addEventListener(
+
+'disconnect',
+
+async ()=>{
+
+  console.log(
+    "DEVICE DISCONNECTED"
+  );
+
+  if(flashStarted){
+
+    flashStarted = false;
+
+    await incrementCount();
+
+    await saveFlashLog();
+
+    showToast(
+      '✅ Firmware Flashed Successfully'
     );
   }
 });
