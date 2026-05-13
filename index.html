@@ -728,7 +728,7 @@ const GOOGLE_SCRIPT_URL =
 "https://script.google.com/macros/s/AKfycbxjDxL1BSDvQPNUiANJQSIWTuscRHa-O8qBs31-ePBiXP8RCeqCyGm5OeSCfQK7pMjc/exec";
 async function saveFlashLog() {
 
-  try{
+  try {
 
     const data = {
 
@@ -750,18 +750,14 @@ async function saveFlashLog() {
       data
     );
 
-    const response =
     await fetch(
-
       GOOGLE_SCRIPT_URL,
-
       {
+        method: "POST",
 
-        method:"POST",
+        mode: "no-cors",
 
-        mode:"no-cors",
-
-        headers:{
+        headers: {
           "Content-Type":
           "application/json"
         },
@@ -770,6 +766,65 @@ async function saveFlashLog() {
         JSON.stringify(data)
       }
     );
+
+    // Update local counter
+    let current =
+    parseInt(
+      localStorage.getItem(
+        "flashCount"
+      ) || "0"
+    );
+
+    current++;
+
+    localStorage.setItem(
+      "flashCount",
+      current
+    );
+
+    // Update UI
+    const el =
+    document.getElementById(
+      "counter-num"
+    );
+
+    el.textContent =
+    current.toLocaleString();
+
+    el.classList.add("bump");
+
+    setTimeout(()=>{
+
+      el.classList.remove(
+        "bump"
+      );
+
+    }, 500);
+
+    // Session counter
+    sessionCount++;
+
+    document
+    .getElementById(
+      "session-val"
+    )
+    .textContent =
+    sessionCount;
+
+    // Status
+    document
+    .getElementById(
+      "api-status"
+    )
+    .textContent =
+    "Live ✓";
+
+    document
+    .getElementById(
+      "api-status"
+    )
+    .style.color =
+    "var(--success)";
 
     console.log(
       "Google Sheet Updated"
@@ -782,8 +837,17 @@ async function saveFlashLog() {
       "Google Sheet Error:",
       err
     );
+
+    document
+    .getElementById(
+      "api-status"
+    )
+    .textContent =
+    "Offline";
   }
 }
+
+
 // Load current count on page load (GET — no increment)
 async function loadCount() {
   const el     = document.getElementById('counter-num');
@@ -903,9 +967,6 @@ async ()=>{
   if(flashStarted){
 
     flashStarted = false;
-
-    await incrementCount();
-
     await saveFlashLog();
 
     showToast(
@@ -915,7 +976,31 @@ async ()=>{
 });
 
 // Init
-loadCount();
+document
+.getElementById(
+  "counter-num"
+)
+.textContent =
+
+parseInt(
+  localStorage.getItem(
+    "flashCount"
+  ) || "0"
+).toLocaleString();
+
+document
+.getElementById(
+  "api-status"
+)
+.textContent =
+"Ready";
+
+document
+.getElementById(
+  "api-status"
+)
+.style.color =
+"var(--success)";
 </script>
 </body>
 </html>
