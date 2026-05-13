@@ -833,15 +833,23 @@ function showToast(msg) {
 // ── ESP Web Tools event listener ────────────────────────────────────────────
 // 'state-changed' fires with: initializing, manifest, prepare,
 //  erasing, writing, finished, error
-document.getElementById('esp-btn').addEventListener('state-changed', (e) => {
+document.getElementById('esp-btn').addEventListener('state-changed',
+async (e) => {console.log("ESP STATE:",e.detail?.state );
+
   const state = e.detail?.state;
-  if (state === 'finished') {
-    incrementCount();
+
+  if(state === 'finished'){
+    await incrementCount();
     await saveFlashLog();
-    showToast('✅  Firmware flashed — device is rebooting!');
+    showToast(
+      '✅ Firmware flashed successfully!'
+    );
   }
-  if (state === 'error') {
-    showToast('❌  Flash failed — try reconnecting the device.');
+
+  if(state === 'error'){
+    showToast(
+      '❌ Flash failed'
+    );
   }
 });
 
