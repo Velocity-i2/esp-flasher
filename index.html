@@ -727,43 +727,61 @@ function animateNum(el, from, to, ms = 900) {
 const GOOGLE_SCRIPT_URL =
 "https://script.google.com/macros/s/AKfycbxjDxL1BSDvQPNUiANJQSIWTuscRHa-O8qBs31-ePBiXP8RCeqCyGm5OeSCfQK7pMjc/exec";
 async function saveFlashLog() {
+
   try{
+
     const data = {
+
       browser:
       navigator.userAgent,
+
       firmware:
       "ESP8266_v1.0",
+
       device:
       "ESP8266",
+
       status:
       "SUCCESS"
     };
+
+    console.log(
+      "Sending To Google Sheet...",
+      data
+    );
+
     const response =
     await fetch(
+
       GOOGLE_SCRIPT_URL,
+
       {
+
         method:"POST",
+
+        mode:"no-cors",
+
         headers:{
           "Content-Type":
           "application/json"
         },
+
         body:
         JSON.stringify(data)
       }
     );
-    const result =
-    await response.json();
-    console.log(result);
-    // Update counter
-    document
-    .getElementById(
-      "counter-num"
-    )
-    .innerHTML =
-    result.count;
+
+    console.log(
+      "Google Sheet Updated"
+    );
+
   }
   catch(err){
-    console.log(err);
+
+    console.log(
+      "Google Sheet Error:",
+      err
+    );
   }
 }
 // Load current count on page load (GET — no increment)
