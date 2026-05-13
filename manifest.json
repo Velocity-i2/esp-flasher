@@ -1,0 +1,14 @@
+{
+  "name": "Velocity Firmware",
+  "version": "1.0.0",
+  "new_install_prompt_erase": false,
+  "new_install_improv_wait_time": 0,
+  "builds": [
+    {
+      "chipFamily": "ESP8266",
+      "parts": [
+        { "path": "Blink_ESP12.ino.bin", "offset": 0 }
+      ]
+    }
+  ]
+}
